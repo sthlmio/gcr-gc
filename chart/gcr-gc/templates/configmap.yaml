@@ -24,6 +24,7 @@ data:
 
     main(){
       local C=0
+      local D=0
       IMAGE="{{ .Values.delete.repository }}"
       OFFSET={{ .Values.delete.offset }}
 
@@ -35,14 +36,15 @@ data:
           set -x
 
           if [[ "$C" -lt "$OFFSET" ]]; then
-            echo "Not deleting: ${IMAGE}@${digest} "
+            echo "Keeping: ${IMAGE}@${digest}"
           else
             gcloud container images delete -q --force-delete-tags "${IMAGE}@${digest}"
-            let C=C+1
+            D=D+1
           fi
         )
+        let C=C+1
       done
-      echo "Deleted ${C} images in ${IMAGE}." >&2
+      echo "Deleted ${D} images in ${IMAGE}." >&2
     }
 
     main

@@ -5,7 +5,7 @@ To use this, a GCP service account must be created with the `storage.buckets.get
 
 #### Install
 Add sthlmio chart repository before installing the chart. Also the chart is installed with `--devel` flag to allow semver versions like `0.1.0-alpha.0` until we reach stable `1.0.0`.
-Make sure to set the values `delete.repository`, `delete.offset` and `secretName`. The `delete.offset` is defaulting to 10, that means we keep the 10 most recent images and their tags and deletes the rest.
+Make sure to set the values `delete.repository`, `delete.offset`, `delete.schedule` and `secretName`. The `delete.offset` is defaulting to 10, that means we keep the 10 most recent images and their tags and deletes the rest. The `delete.schedule` is defaulting to run once every hour.
 ```bash
 helm repo add sthlmio https://charts.sthlm.io
 

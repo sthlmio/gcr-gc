@@ -1,7 +1,7 @@
 name: gcr-gc
 # version and appVersion is automatically set by release tool
-version: 0.1.0-alpha.21
-appVersion: 0.1.0-alpha.21
+version: 0.1.0-alpha.25
+appVersion: 0.1.0-alpha.25
 description: A Helm chart for gcr-gc
 home: https://github.com/sthlmio/gcr-gc
 keywords:
