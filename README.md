@@ -15,6 +15,7 @@ helm install \
     --devel \
     # --set-string delete.repository= \
     # --set-string secretName= \
+    # --set-string delete.schedule="0 * * * *" \
     # --set delete.offset=20 \
     sthlmio/gcr-gc
 ```
