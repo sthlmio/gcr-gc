@@ -1,7 +1,22 @@
 # gcr-gc
-A Helm chart to handle Google Container Registry Garbage Collection (GCR GC)
+A Helm chart to handle Google Container Registry Garbage Collection (GCR GC) running inside Google Kubernetes Engine as a Helm chart.
 
 To use this, a GCP service account must be created with the `storage.buckets.get, storage.objects.delete, storage.objects.get, storage.objects.list` roles.
+
+#### Install
+Add sthlmio chart repository before installing the chart. Also the chart is installed with `--devel` flag to allow semver versions like `0.1.0-alpha.0` until we reach stable `1.0.0`.
+Make sure to set the values `delete.repository` and `secretName`.
+```bash
+helm repo add sthlmio https://charts.sthlm.io
+
+helm install \
+    --name gcr-gc \
+    --namespace sthlmio \
+    --devel \
+    # --set-string delete.repository= \
+    # --set-string secretName= \
+    sthlmio/gcr-gc
+```
 
 #### Example to create a service account and apply strict object roles to Google Container Registry bucket
 ```bash
