@@ -1,0 +1,4 @@
+chart/gcr-gc-*.tgz
+chart/index*.yaml
+.idea
+Chart.yaml-e

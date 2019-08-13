@@ -1,0 +1,68 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "gcr-gc.fullname" . }}
+  labels:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+spec:
+  schedule: {{ .Values.delete.schedule | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 600
+  backoffLimit: 3
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+          labels:
+            app: job
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: google-cloud-key
+              secret:
+                secretName: {{ include "gcr-gc.secretName" . }}
+            - name: gcr-gc-volume
+              configMap:
+                name: {{ include "gcr-gc.fullname" . }}
+                defaultMode: 0777
+          containers:
+            - name: job
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+              envFrom:
+                - configMapRef:
+                    name: {{ include "gcr-gc.fullname" . }}
+              env:
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: /var/secrets/google/key.json
+              command: ["/bin/bash", "-c"]
+              args:
+                - |
+                  /tmp/gcr-gc.sh
+              volumeMounts:
+                - name: google-cloud-key
+                  mountPath: /var/secrets/google
+                - name: gcr-gc-volume
+                  mountPath: /tmp/gcr-gc.sh
+                  subPath: gcr-gc.sh
+                  readOnly: true
+              {{- with .Values.resources }}
+              resources:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- with .Values.affinity }}
+        affinity:
+          {{- toYaml . | nindent 14 }}
+        {{- end }}
+        {{- with .Values.tolerations }}
+        tolerations:
+          {{- toYaml . | nindent 14 }}
+        {{- end }}
