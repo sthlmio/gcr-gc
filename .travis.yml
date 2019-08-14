@@ -1,0 +1,39 @@
+sudo: required
+
+branches:
+  only:
+    - master
+    - /^v.*$/
+
+services:
+  - docker
+
+cache:
+  directories:
+    - "$HOME/google-cloud-sdk/"
+
+env:
+  global:
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+    - HELM_URL=https://storage.googleapis.com/kubernetes-helm
+    - HELM_TGZ=helm-v2.14.1-linux-amd64.tar.gz
+
+before_deploy:
+  # Installing Helm
+  - wget -q ${HELM_URL}/${HELM_TGZ}
+  - tar xzfv ${HELM_TGZ}
+  - PATH=`pwd`/linux-amd64/:$PATH
+  - helm init --client-only
+  # Installing Google Cloud SDK
+  - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf "$HOME/google-cloud-sdk"; curl https://sdk.cloud.google.com | bash > /dev/null; fi
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - echo $GOOGLE_CLOUD_SERVICE_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
+  - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+  - gcloud auth configure-docker
+
+deploy:
+  - provider: script
+    script: make release VER=${TRAVIS_TAG:1}
+    skip_cleanup: true
+    on:
+      tags: true
