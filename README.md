@@ -1,4 +1,7 @@
 # gcr-gc
+
+[![Build Status](https://travis-ci.org/sthlmio/gcr-gc.svg?branch=master)](https://travis-ci.org/sthlmio/gcr-gc)
+
 A Helm chart to handle Google Container Registry Garbage Collection (GCR GC) running inside Google Kubernetes Engine as a Helm chart.
 
 To use this, a GCP service account must be created with the `storage.buckets.get, storage.objects.delete, storage.objects.get, storage.objects.list` roles.
