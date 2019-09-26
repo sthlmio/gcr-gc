@@ -24,7 +24,7 @@ data:
 
     main(){
       local C=0
-      local D=0
+      D=0
       IMAGE="{{ .Values.delete.repository }}"
       OFFSET={{ .Values.delete.offset }}
 
